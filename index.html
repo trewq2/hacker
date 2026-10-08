@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020705" />
+  <title>Törd fel a titkos kódot! | Hacker Lab</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <main class="app-shell">
+    <section class="terminal-card">
+      <header class="terminal-header">
+        <div class="lights" aria-hidden="true">
+          <span class="red"></span>
+          <span class="yellow"></span>
+          <span class="green"></span>
+        </div>
+        <div class="terminal-title">PÁLFY CYBER LAB // SECURE TERMINAL</div>
+        <button id="soundBtn" class="icon-btn" type="button" aria-label="Hang ki- és bekapcsolása">🔊</button>
+      </header>
+
+      <div class="terminal-body">
+        <div class="scanline"></div>
+
+        <section id="introScreen" class="screen active">
+          <p class="system-line">[SYSTEM] Biztonságos kapcsolat létrehozása...</p>
+          <p class="system-line delay-1">[SYSTEM] Titkosított csatorna: <strong>AKTÍV</strong></p>
+          <p class="system-line delay-2">[SYSTEM] Azonosítás szükséges.</p>
+
+          <h1>TÖRD FEL A TITKOS KÓDOT!</h1>
+          <p class="lead">
+            A rendszer egy <strong>3 jegyű titkos kódot</strong> rejt.
+            60 másodperced van megszerezni a hozzáférést.
+          </p>
+
+          <form id="nameForm" class="stack">
+            <label for="playerName">&gt; Add meg a neved:</label>
+            <div class="command-row">
+              <span class="prompt">$</span>
+              <input
+                id="playerName"
+                name="playerName"
+                type="text"
+                maxlength="24"
+                autocomplete="off"
+                placeholder="pl. Zsolti"
+                required
+              />
+              <button class="primary-btn" type="submit">BELÉPÉS</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="gameScreen" class="screen">
+          <div class="status-grid">
+            <div class="status-box">
+              <span>OPERÁTOR</span>
+              <strong id="hackerName">---</strong>
+            </div>
+            <div class="status-box">
+              <span>IDŐ</span>
+              <strong id="timer">01:00</strong>
+            </div>
+            <div class="status-box">
+              <span>PRÓBÁK</span>
+              <strong id="attempts">0</strong>
+            </div>
+          </div>
+
+          <div class="progress-wrap" aria-label="Hátralévő idő">
+            <div id="timeBar" class="progress-bar"></div>
+          </div>
+
+          <div id="log" class="log-window" aria-live="polite">
+            <p>[SYSTEM] Célpont elérve.</p>
+            <p>[SYSTEM] Háromjegyű hozzáférési kód szükséges.</p>
+          </div>
+
+          <form id="guessForm" class="stack">
+            <label for="guess">&gt; Írd be a 100 és 999 közötti kódot:</label>
+            <div class="command-row">
+              <span class="prompt">$</span>
+              <input
+                id="guess"
+                type="number"
+                inputmode="numeric"
+                min="100"
+                max="999"
+                placeholder="000"
+                required
+              />
+              <button class="primary-btn" type="submit">FELTÖRÉS</button>
+            </div>
+          </form>
+
+          <p id="hint" class="hint">A rendszer figyeli a próbálkozásaidat...</p>
+        </section>
+
+        <section id="resultScreen" class="screen result-screen">
+          <div id="resultIcon" class="result-icon">✓</div>
+          <h2 id="resultTitle">ACCESS GRANTED</h2>
+          <p id="resultText"></p>
+
+          <div class="result-stats">
+            <div><span>Titkos kód</span><strong id="secretResult">---</strong></div>
+            <div><span>Próbálkozás</span><strong id="attemptResult">0</strong></div>
+            <div><span>Pontszám</span><strong id="scoreResult">0</strong></div>
+          </div>
+
+          <div class="button-row">
+            <button id="restartBtn" class="primary-btn" type="button">ÚJ JÁTÉK</button>
+            <button id="showPythonBtn" class="secondary-btn" type="button">PYTHON KÓD</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <aside class="info-card">
+      <h2>Mit tanulunk ebből?</h2>
+      <p>
+        A játék weben fut, de ugyanennek a logikája Pythonban is nagyon röviden megírható.
+      </p>
+      <div class="mini-code">
+        <code>while tipp != titkos_kod:</code><br />
+        <code>&nbsp;&nbsp;if tipp &lt; titkos_kod:</code><br />
+        <code>&nbsp;&nbsp;&nbsp;&nbsp;print("Nagyobb!")</code>
+      </div>
+      <button id="showPythonAsideBtn" class="secondary-btn full" type="button">
+        TELJES PYTHON KÓD
+      </button>
+    </aside>
+  </main>
+
+  <dialog id="pythonDialog">
+    <div class="dialog-head">
+      <div>
+        <span class="eyebrow">PYTHON VÁLTOZAT</span>
+        <h2>Ugyanez Pythonban</h2>
+      </div>
+      <button id="closeDialogBtn" class="icon-btn" type="button" aria-label="Bezárás">✕</button>
+    </div>
+    <pre><code id="pythonCode">Betöltés...</code></pre>
+    <div class="dialog-actions">
+      <button id="copyPythonBtn" class="primary-btn" type="button">KÓD MÁSOLÁSA</button>
+      <a class="secondary-btn link-btn" href="hacker_game.py" download>PYTHON FÁJL</a>
+    </div>
+  </dialog>
+
+  <footer>
+    PÁLYAORIENTÁCIÓS NAP // INFORMATIKA // PYTHON • HÁLÓZAT • WEB • HARDVER
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
