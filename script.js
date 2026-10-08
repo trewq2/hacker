@@ -29,6 +29,8 @@ const closeDialogBtn = document.getElementById("closeDialogBtn");
 const copyPythonBtn = document.getElementById("copyPythonBtn");
 const pythonCodeEl = document.getElementById("pythonCode");
 const soundBtn = document.getElementById("soundBtn");
+const leaderboardBody = document.getElementById("leaderboardBody");
+const clearLeaderboardBtn = document.getElementById("clearLeaderboardBtn");
 
 let secretCode = 0;
 let attempts = 0;
@@ -37,6 +39,10 @@ let timerId = null;
 let gameActive = false;
 let soundEnabled = true;
 let audioCtx = null;
+let currentPlayerName = "";
+let currentHackerName = "";
+
+const LEADERBOARD_KEY = "palfyCyberLabLeaderboardV1";
 
 const pythonSource = `import random
 import time
@@ -67,7 +73,85 @@ while True:
         print(f"Próbálkozások: {probak}")
         break`;
 
+
 pythonCodeEl.textContent = pythonSource;
+
+function getLeaderboard() {
+  try {
+    const raw = localStorage.getItem(LEADERBOARD_KEY);
+    const data = raw ? JSON.parse(raw) : [];
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLeaderboard(data) {
+  try {
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(data));
+  } catch {
+    // Privát böngészésben vagy tiltott tárhely esetén a játék ettől még működik.
+  }
+}
+
+function renderLeaderboard(highlightId = null) {
+  const data = getLeaderboard();
+
+  if (!data.length) {
+    leaderboardBody.innerHTML = `
+      <tr>
+        <td colspan="3" class="empty-row">Még nincs eredmény.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  leaderboardBody.innerHTML = data.map((entry, index) => `
+    <tr class="${entry.id === highlightId ? "new-record" : ""}" title="${entry.hackerName} • ${entry.attempts} próba • ${entry.timeLeft} mp maradt">
+      <td>${index + 1}.</td>
+      <td class="name-cell">${escapeHtml(entry.playerName)}</td>
+      <td class="score-cell">${entry.score}</td>
+    </tr>
+  `).join("");
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function addToLeaderboard(score) {
+  const data = getLeaderboard();
+
+  const entry = {
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    playerName: currentPlayerName,
+    hackerName: currentHackerName,
+    score,
+    attempts,
+    timeLeft,
+    date: new Date().toISOString()
+  };
+
+  data.push(entry);
+
+  data.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    if (a.attempts !== b.attempts) return a.attempts - b.attempts;
+    return b.timeLeft - a.timeLeft;
+  });
+
+  const top10 = data.slice(0, 10);
+  saveLeaderboard(top10);
+  renderLeaderboard(top10.some(item => item.id === entry.id) ? entry.id : null);
+
+  return top10.findIndex(item => item.id === entry.id) + 1;
+}
+
 
 function switchScreen(target) {
   [introScreen, gameScreen, resultScreen].forEach(screen => screen.classList.remove("active"));
@@ -134,6 +218,8 @@ function startGame(playerName) {
   gameActive = true;
 
   const hackerName = generateHackerName(playerName);
+  currentPlayerName = playerName;
+  currentHackerName = hackerName;
   hackerNameEl.textContent = hackerName;
   attemptsEl.textContent = "0";
   timerEl.textContent = "01:00";
@@ -194,10 +280,13 @@ function endGame(success) {
 
   if (success) {
     const score = calculateScore();
+    const rank = addToLeaderboard(score);
     resultScreen.classList.remove("denied");
     resultIcon.textContent = "✓";
     resultTitle.textContent = "ACCESS GRANTED";
-    resultText.textContent = `Sikerült feltörnöd a rendszert! ${timeLeft} másodperc maradt a biztonsági ablakból.`;
+    resultText.textContent = rank > 0
+      ? `Sikerült feltörnöd a rendszert! ${timeLeft} másodperc maradt. Felkerültél a TOP 10-be: ${rank}. hely!`
+      : `Sikerült feltörnöd a rendszert! ${timeLeft} másodperc maradt a biztonsági ablakból.`;
     scoreResult.textContent = score;
     successSound();
   } else {
@@ -343,4 +432,17 @@ window.addEventListener("resize", resizeMatrix);
 resizeMatrix();
 drawMatrix();
 
+
+clearLeaderboardBtn.addEventListener("click", () => {
+  const confirmed = confirm("Biztosan törlöd a teljes TOP 10 ranglistát ezen a gépen?");
+  if (!confirmed) return;
+
+  localStorage.removeItem(LEADERBOARD_KEY);
+  renderLeaderboard();
+  beep(240, .08, "square", .025);
+});
+
+renderLeaderboard();
+
 playerNameInput.focus();
+

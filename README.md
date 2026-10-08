@@ -10,6 +10,7 @@ Látványos, pályaorientációs napra készült mini hackerjáték.
 - 60 másodperces visszaszámlálás
 - próbálkozásszámláló
 - pontszám
+- automatikus TOP 10 ranglista `localStorage` mentéssel
 - hanghatások
 - Matrix-szerű háttér
 - külön megtekinthető Python-forrás
@@ -45,3 +46,10 @@ python hacker_game.py
 ## Megjegyzés
 
 A GitHub Pages statikus weboldalakat futtat, ezért a böngészős játék HTML/CSS/JavaScript segítségével működik. A mellékelt `hacker_game.py` ugyanennek a logikának az oktatási Python-változata.
+
+
+## TOP 10 ranglista
+
+A sikeres játékok automatikusan bekerülnek a TOP 10-be. A ranglista a böngésző `localStorage` tárhelyén marad meg, ezért GitHub Pages-en külön adatbázis nélkül is működik.
+
+Fontos: a ranglista az adott böngészőhöz/géphez tartozik. Ha több gépen használod a játékot, mindegyiknek külön TOP 10 listája lesz.
