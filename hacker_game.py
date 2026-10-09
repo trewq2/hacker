@@ -9,7 +9,7 @@ elotagok = ["Shadow", "Cyber", "Zero", "Byte", "Ghost", "Neo"]
 utotagok = ["Fox", "Wolf", "Ninja", "Coder", "Hunter", "404"]
 
 hackernev = random.choice(elotagok) + random.choice(utotagok)
-titkos_kod = random.randint(100, 999)
+titkos_kod = random.randint(100, 500)
 probak = 0
 
 print()
@@ -28,8 +28,8 @@ while True:
         print("Csak számot írj be!")
         continue
 
-    if tipp < 100 or tipp > 999:
-        print("100 és 999 közötti számot adj meg!")
+    if tipp < 100 or tipp > 500:
+        print("100 és 500 közötti számot adj meg!")
         continue
 
     probak += 1
